@@ -3,6 +3,7 @@ import { Hanken_Grotesk } from "next/font/google";
 import localFont from 'next/font/local'
 import "./globals.css";
 import ReactLenis from "lenis/react";
+import Sidebar from "@/components/common/sidebar";
 
 const hk = Hanken_Grotesk({
   variable: "--font-hk",
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body
         className={`${hk.variable} ${satoshi.variable} antialiased`}
       >
+      <Sidebar />
         {children}
       </body>
     </ReactLenis>

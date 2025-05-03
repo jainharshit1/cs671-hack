@@ -47,7 +47,7 @@ from fastapi.security import APIKeyHeader
 
 
 # Simple API key auth
-API_KEY = "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"  # For demo purposes
+API_KEY = ""  # For demo purposes
 api_key_header = APIKeyHeader(name="X-API-Key")
 
 
@@ -61,7 +61,7 @@ def get_api_key(api_key: str = Depends(api_key_header)):
 
 
 # Initialize OpenAI client
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="")
 
 
 # Define request/response models
