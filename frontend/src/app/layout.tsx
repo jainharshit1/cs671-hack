@@ -1,9 +1,10 @@
 import "@/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist } from "next/font/google";
-
-import { TRPCReactProvider } from "@/trpc/react";
+import { Hanken_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
+import ReactLenis from "lenis/react";
+import { AuthProvider } from "@/context/auth";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -11,19 +12,26 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
+const hk = Hanken_Grotesk({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-hk",
+});
+
+const satoshi = localFont({
+  src: "./fonts/Satoshi-Variable.ttf",
+  variable: "--font-satoshi",
 });
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
-      <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
-      </body>
+    <html lang="en" className={`${hk.variable}`}>
+      <ReactLenis root>
+        <AuthProvider>
+          <body>{children}</body>
+        </AuthProvider>
+      </ReactLenis>
     </html>
   );
 }
