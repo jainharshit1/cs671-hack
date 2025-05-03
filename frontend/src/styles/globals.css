@@ -12,5 +12,5 @@ html {
 }
 
 body {
-  @apply relative z-0 bg-zinc-900 text-zinc-100 font-hk text-base font-normal w-screen min-h-screen overflow-x-clip;
+  @apply relative z-0 bg-zinc-950 text-zinc-100 font-hk text-base font-normal w-screen min-h-screen overflow-x-clip;
 }

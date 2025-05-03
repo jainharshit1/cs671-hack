@@ -1,12 +1,49 @@
 "use client";
 
-import React, { type Dispatch, type SetStateAction, useState } from "react";
-// import SmallPic from "public/pic-small.jpg";
+import React, {
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+  useState,
+} from "react";
 import { motion } from "motion/react";
-import { MoreVertical, X } from "lucide-react";
+import {
+  History,
+  HomeIcon,
+  MoreVertical,
+  TelescopeIcon,
+  User,
+  X,
+} from "lucide-react";
 import SignInButton from "@/components/auth/signin-button";
 import SearchWidget from "@/components/root/search-widget";
+import Link from "next/link";
 // import SignInButton from "@/components/auth/signin-button";
+
+const SidebarLink = ({
+  icon,
+  href,
+  title,
+  setToggle,
+}: {
+  icon: ReactNode;
+  href: string;
+  title: string;
+  setToggle: Dispatch<SetStateAction<boolean>>;
+}) => {
+  return (
+    <Link
+      href={href}
+      onClick={() => setToggle(false)}
+      className="font-satoshi flex items-center gap-5 text-lg font-medium tracking-wider uppercase"
+    >
+      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-zinc-100/[0.2] bg-zinc-950/[0.2] text-zinc-100">
+        {icon}
+      </div>
+      {title}
+    </Link>
+  );
+};
 
 const SidebarMenu = ({
   toggle,
@@ -34,7 +71,7 @@ const SidebarMenu = ({
 };
 
 const Sidebar = () => {
-  const [toggle, setToggle] = useState(true);
+  const [toggle, setToggle] = useState(false);
 
   return (
     <>
@@ -51,7 +88,6 @@ const Sidebar = () => {
           ease: [0.25, 1, 0.5, 1],
         }}
         className="fixed z-40 flex h-dvh bg-zinc-950/[0.5] pr-48 backdrop-blur-lg"
-        onClick={() => setToggle(false)}
       >
         <div className="flex h-full flex-col justify-between px-12 py-24">
           <div className="flex flex-col items-start gap-12">
@@ -63,9 +99,37 @@ const Sidebar = () => {
                 error exercitationem illo molestias numquam optio.
               </div>
             </div>
-            hello
+            <div className="flex flex-col gap-5">
+              <SidebarLink
+                setToggle={setToggle}
+                icon={<HomeIcon />}
+                title={"Home"}
+                href={"/"}
+              />
+              <SidebarLink
+                setToggle={setToggle}
+                icon={<TelescopeIcon />}
+                title={"explore"}
+                href={"/movies"}
+              />
+              <SidebarLink
+                setToggle={setToggle}
+                icon={<User />}
+                title={"account"}
+                href={"/account"}
+              />
+              <SidebarLink
+                setToggle={setToggle}
+                icon={<History />}
+                title={"history"}
+                href={"/"}
+              />
+            </div>
           </div>
-          hi
+          <div className="font-satoshi max-w-[400px] text-sm leading-normal font-medium text-zinc-100/50">
+            jello hello hello Lorem ipsum dolor sit amet, consectetur
+            adipisicing elit. Delectus distinctio dolor.
+          </div>
         </div>
       </motion.div>
     </>
