@@ -5,6 +5,7 @@ import { Hanken_Grotesk } from "next/font/google";
 import localFont from "next/font/local";
 import ReactLenis from "lenis/react";
 import { AuthProvider } from "@/context/auth";
+import Sidebar from "@/components/root/sidebar";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -26,10 +27,16 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${hk.variable}`}>
+    <html
+      lang="en"
+      className={`${hk.variable} ${satoshi.variable} antialiased`}
+    >
       <ReactLenis root>
         <AuthProvider>
-          <body>{children}</body>
+          <body>
+            <Sidebar />
+            {children}
+          </body>
         </AuthProvider>
       </ReactLenis>
     </html>
