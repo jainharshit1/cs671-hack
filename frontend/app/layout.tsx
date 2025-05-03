@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Hanken_Grotesk } from "next/font/google";
+import localFont from 'next/font/local'
 import "./globals.css";
+import ReactLenis from "lenis/react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const hk = Hanken_Grotesk({
+  variable: "--font-hk",
   subsets: ["latin"],
-});
+  display: "swap",
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const satoshi = localFont({
+  src: "./fonts/Satoshi-Variable.ttf",
+  variable: "--font-satoshi",
+})
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,11 +27,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+    <ReactLenis root>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${hk.variable} ${satoshi.variable} antialiased`}
       >
         {children}
       </body>
+    </ReactLenis>
     </html>
   );
 }
