@@ -16,7 +16,7 @@ export default function CameraCapture() {
       }
     };
 
-    startCamera();
+    void startCamera();
   }, []);
 
   const capturePhoto = () => {

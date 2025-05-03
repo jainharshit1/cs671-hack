@@ -4,10 +4,10 @@ import Image from "next/image";
 
 const Page = () => {
   return (
-    <main className="relative z-0 h-dvh w-full overflow-x-clip bg-zinc-950 px-5 pt-24 pb-12 sm:px-12 md:pt-48 lg:px-48">
+    <main className="relative z-0 h-dvh w-full overflow-x-clip bg-zinc-950 px-5 pt-24 pb-12 sm:px-12 md:pt-36 lg:px-48">
       <Image
         src={ImgBig}
-        alt={"Sampla pic"}
+        alt={"Sample pic"}
         className="absolute top-0 left-0 -z-20 h-full w-full object-cover object-center"
       />
       <div className="absolute top-0 left-0 -z-10 h-full w-full bg-gradient-to-b from-zinc-950/50 via-zinc-950 to-zinc-950"></div>

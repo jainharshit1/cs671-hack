@@ -6,7 +6,6 @@ import localFont from "next/font/local";
 import ReactLenis from "lenis/react";
 import { AuthProvider } from "@/context/auth";
 import Sidebar from "@/components/root/sidebar";
-import Footer from "@/components/root/footer";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -37,7 +36,6 @@ export default function RootLayout({
           <body>
             <Sidebar />
             {children}
-            <Footer />
           </body>
         </AuthProvider>
       </ReactLenis>
