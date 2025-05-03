@@ -10,13 +10,13 @@ const TestPage = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div>
+    <div className="pt-40">
       {user ? (
         <p>
           Welcome, {user.displayName}! Your UID is {user.uid}
           <button
             onClick={signOut}
-            className="rounded bg-red-500 px-4 py-2 text-white"
+            className="cursor-pointer rounded bg-red-500 px-4 py-2 text-white"
           >
             Sign Out
           </button>

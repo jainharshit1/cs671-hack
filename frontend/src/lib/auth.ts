@@ -19,9 +19,9 @@ export async function signInWithGoogle() {
           photoURL: user.photoURL,
           createdAt: new Date().toISOString(),
         });
-      }
 
-      return user;
+        return user;
+      }
     }
   } catch (err) {
     console.error("Google Sign-In Error:", err);

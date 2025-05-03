@@ -1,10 +1,12 @@
 "use client";
 
 import React, { type Dispatch, type SetStateAction, useState } from "react";
-import Image from "next/image";
-import SmallPic from "public/pic-small.jpg";
+// import SmallPic from "public/pic-small.jpg";
 import { motion } from "motion/react";
-import { MoreVertical, Search, X } from "lucide-react";
+import { MoreVertical, X } from "lucide-react";
+import SignInButton from "@/components/auth/signin-button";
+import SearchWidget from "@/components/root/search-widget";
+// import SignInButton from "@/components/auth/signin-button";
 
 const SidebarMenu = ({
   toggle,
@@ -14,8 +16,8 @@ const SidebarMenu = ({
   setToggle: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
-    <div className="fixed top-0 left-0 z-50 h-5 w-screen px-48 py-5">
-      <div className="flex w-full items-center justify-center gap-12">
+    <div className="fixed top-0 left-0 z-50 h-5 w-screen px-5 py-5 sm:px-24 lg:px-48">
+      <div className="flex w-full items-start justify-start gap-5 sm:gap-12 md:justify-center">
         <div
           className="font-satoshi flex shrink-0 cursor-pointer items-center justify-between gap-2.5 text-sm font-semibold uppercase"
           onClick={() => setToggle(!toggle)}
@@ -25,55 +27,45 @@ const SidebarMenu = ({
           </div>
           {toggle ? "close" : "menu"}
         </div>
-        <div className="font-satoshi flex h-full w-full items-center justify-between overflow-x-clip rounded-full border border-zinc-100/[0.2] bg-zinc-900/[0.3] text-zinc-100/[0.7] backdrop-blur-2xl">
-          <div className="px-5 py-2.5 font-medium">Search phrase here woo</div>
-          <div className="h-full rounded-full bg-gradient-to-bl from-rose-700 to-sky-600 px-5 py-2.5 text-base font-semibold text-zinc-100 uppercase">
-            <Search />
-          </div>
-        </div>
+        <SearchWidget />
       </div>
     </div>
   );
 };
 
 const Sidebar = () => {
-  const [toggle, setToggle] = useState(false);
+  const [toggle, setToggle] = useState(true);
 
   return (
     <>
       <SidebarMenu toggle={toggle} setToggle={setToggle} />
       <motion.div
         initial={{
-          x: -100,
-          opacity: 0,
+          x: "-100%",
         }}
         animate={{
-          x: toggle ? 0 : -100,
-          opacity: toggle ? 1 : 0,
+          x: toggle ? 0 : "-100%",
         }}
-        className="fixed z-40 flex h-dvh w-screen bg-zinc-950/[0.5] backdrop-blur-sm"
+        transition={{
+          duration: 0.5,
+          ease: [0.25, 1, 0.5, 1],
+        }}
+        className="fixed z-40 flex h-dvh bg-zinc-950/[0.5] pr-48 backdrop-blur-lg"
         onClick={() => setToggle(false)}
       >
-        <div className="flex flex-col items-center justify-between gap-5 px-8 py-24">
-          <div className="flex flex-col items-center gap-5">
-            <div className="relative z-0 aspect-square w-16 overflow-clip rounded-full border border-zinc-100/[0.2]">
-              <Image
-                src={SmallPic}
-                alt={"Sample pic"}
-                className="h-full w-full object-cover"
-              />
+        <div className="flex h-full flex-col justify-between px-12 py-24">
+          <div className="flex flex-col items-start gap-12">
+            <div className="mt-2.5 space-y-2.5">
+              <SignInButton />
+              <div className="font-satoshi max-w-[500px] text-sm leading-normal font-medium text-zinc-100/70">
+                jello hello hello Lorem ipsum dolor sit amet, consectetur
+                adipisicing elit. Delectus distinctio dolor, ducimus eligendi
+                error exercitationem illo molestias numquam optio.
+              </div>
             </div>
-            <div className="mt-12 aspect-square w-12 rounded-full bg-zinc-950/[0.7]"></div>
-            <div className="aspect-square w-12 rounded-full bg-zinc-950/[0.7]"></div>
-            <div className="aspect-square w-12 rounded-full bg-zinc-950/[0.7]"></div>
+            hello
           </div>
-          <div className="relative z-0 aspect-square w-16 overflow-clip rounded-full border border-zinc-100/[0.2]">
-            <Image
-              src={SmallPic}
-              alt={"Sample pic"}
-              className="h-full w-full object-cover"
-            />
-          </div>
+          hi
         </div>
       </motion.div>
     </>
