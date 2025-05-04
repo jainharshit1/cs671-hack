@@ -42,6 +42,24 @@ Our recommendation system leverages a multi-agent AI architecture powered by Gem
 
 ---
 
+## 📽️ Watch History-Based Recommendation
+
+We use Cornac's **BiVAE** model for the collaborative filtering task in content recommendation.  
+The BiVAE model is trained on the **MovieLens 32M** dataset, which includes the latest movies up to 2024.
+
+To recommend content for a new user, we perform **similarity search** to find the most similar existing user in the MovieLens dataset.  
+The recommendations (predicted ratings) for this similar user are then used as recommendations for the new user.
+
+---
+
+## 🎬 Playlist Creation
+
+User feedback serves as a dynamic weighting mechanism to tailor a personalized playlist.  
+Based on this feedback, we curate a custom selection of top-rated movies, while intelligently considering various attributes — such as **Genre**, **Cast**, **Emotion**, and **Themes** — extracted from the user's watch history.  
+This ensures a deeply personalized and context-aware viewing experience.
+
+---
+
 
 ## 🧰 TECH STACK
 
@@ -76,6 +94,20 @@ Our recommendation system leverages a multi-agent AI architecture powered by Gem
     cp .env.example .env
 ```
 
+- BiVAE QuickStart:
+   - 1. Train BiVAE
+   ```bash
+      cd BiVAE
+      jupyter notebook cornac_bivae_deep_dive_50.ipynb
+   ```
+   - 2. Download links
+      - [🔗 Model Weights](https://drive.google.com/file/d/1QsUqXv-Jk6EdgTiwkIWKvgZkBubb_LFP/view?usp=sharing)  
+      - [📁 Dataset](https://drive.google.com/file/d/1S4MpwbRSsAcAas6IjlsT_pDYW3-0hKtE/view?usp=sharing)  
+      - [📊 Training Data](https://drive.google.com/file/d/1ZH7Qnw37GcXgHUWiy8MT435kIy8bKFbj/view?usp=sharing)  
+      - [💾 Auto-saved Outputs](https://drive.google.com/file/d/1Wz0lKvu0Sz9LS70bdVpny_W1uH3BTQC8/view?usp=sharing)
+
+
+
 - cd into the `frontend` directory , install dependencies and start the frontend server:
 
 ```bash
@@ -91,9 +123,10 @@ Our recommendation system leverages a multi-agent AI architecture powered by Gem
     uvicorn main:app --reload --port 8000
 ```
 
+
 ---
 
-// ...existing code...
+
 ## 📸 SHOWCASE
 
 ![Demo: HomePage](https://github.com/Voldemort271/cs671-hack/blob/main/images/img1.jpg)
