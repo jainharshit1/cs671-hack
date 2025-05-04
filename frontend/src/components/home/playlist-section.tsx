@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { getPlaylistRecommendations } from "@/lib/actions";
 import type { MovieData } from "@/app/recommendations/page";
-import { getMovieByImdbId } from "@/lib/movies";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -47,33 +46,12 @@ const FilmSection = () => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const data = await getPlaylistRecommendations();
 
-        let results: string[] = [];
+        console.log(data);
 
-        // Handle different response formats
-        if (data && typeof data === "object") {
-          if (Array.isArray(data)) {
-            // If data is already an array
-            results = data as string[];
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          } else if (data.results && Array.isArray(data.results)) {
-            // If data has a results property that is an array
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            results = data.results as string[];
-          } else {
-            // Try to extract IDs from any object format
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            const possibleIds = Object.values(data).filter(
-              (value) => typeof value === "string" || Array.isArray(value),
-            );
-            if (possibleIds.length > 0) {
-              results = Array.isArray(possibleIds[0])
-                ? (possibleIds[0] as string[])
-                : [possibleIds[0]!];
-            }
-          }
-        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const idList = data.results as string[];
 
-        setIds(results);
+        setIds(idList);
       } catch (error) {
         toast.error("Error fetching history. Check console");
         console.log(error);
@@ -87,40 +65,43 @@ const FilmSection = () => {
   // Second useEffect: fetch movie data whenever ids change
   useEffect(() => {
     const fetchMovies = async () => {
-      // Guard against undefined ids or empty array
-      if (!ids || ids.length === 0) {
-        setLoading(false);
-        return;
-      }
+      if (!ids) return;
 
       try {
-        const movieData = await Promise.all(
-          ids.map((id) => getMovieByImdbId(id)),
+        const moviesData = await Promise.all(
+          ids.map(async (id) => {
+            const res = await fetch(`/api/movies/${id}`);
+            if (!res.ok) {
+              console.error(`Failed to fetch movie for ID ${id}`);
+              return null;
+            }
+
+            const data = await res.json();
+            const movieData = data.movie_results?.[0];
+            if (!movieData) return null;
+
+            return {
+              ...movieData,
+              imdb_id: id,
+            };
+          }),
         );
 
-        const filteredMovieData: MovieData[] = movieData
-          .map((el, i) => {
-            if (!el?.movie_results?.[0]) {
-              console.log(`No results for movie ID ${ids[i]}`);
-              return undefined;
-            }
-            return {
-              ...el.movie_results[0],
-              imdb_id: ids[i],
-            };
-          })
-          .filter((item): item is MovieData => item !== undefined);
-        setMovies(filteredMovieData);
+        const filteredMovies = moviesData.filter((movie) => movie !== null);
+        setMovies(filteredMovies as MovieData[]);
       } catch (error) {
-        toast.error("Error fetching movies. Check console");
-        console.log(error);
-        setMovies([]);
+        toast.error("Error fetching movie recommendations. Check console");
+        console.error("Error fetching movie recommendations:", error);
       } finally {
         setLoading(false);
       }
     };
 
     void fetchMovies();
+  }, [ids]);
+
+  useEffect(() => {
+    console.log("IDS", ids);
   }, [ids]);
 
   return (

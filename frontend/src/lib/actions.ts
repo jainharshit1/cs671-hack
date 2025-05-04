@@ -159,7 +159,8 @@ export async function getPlaylistRecommendations() {
   try {
     console.log("Sending data:", JSON.stringify(playlist));
 
-    const response = await fetch("http://localhost:8000/api/recommendations", {
+    const response = await fetch("http://localhost:8000/api/playlist", {
+      // change to recommendations
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -178,10 +179,71 @@ export async function getPlaylistRecommendations() {
 
     const data = await response.json();
 
-    return data.results;
+    return data;
   } catch (error) {
     toast.error("Error fetching movie recommendations. Check console");
     console.log(error);
     throw error;
   }
 }
+
+export const rateMovie = async ({
+  movie,
+  rating,
+}: {
+  movie: MovieType;
+  rating: number;
+}) => {
+  const user = await getCurrentUser();
+  if (!user) {
+    toast.error("No user is signed in.");
+    redirect("/login");
+  }
+
+  const q = query(collection(db, "accounts"), where("user_id", "==", user.uid));
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
+    console.error("No account document found for user.");
+    return;
+  }
+
+  const accDoc = querySnapshot.docs[0];
+  const docRef = accDoc.ref;
+  const prevData = accDoc.data();
+
+  const history = prevData.history;
+
+  if (!Array.isArray(history)) {
+    console.error("History is not an array.");
+    return;
+  }
+
+  let updated = false;
+  const updatedHistory = history.map((el: MovieType & { rating: number }) => {
+    if (el.title === movie.title) {
+      updated = true;
+      return { ...movie, rating }; // overwrite with new movie data and updated rating
+    }
+    return el;
+  });
+
+  if (!updated) {
+    updatedHistory.push({
+      ...movie,
+      rating,
+    });
+  }
+
+  const updatedData = {
+    ...prevData,
+    history: updatedHistory,
+  };
+
+  try {
+    await updateDoc(docRef, updatedData);
+    console.log("Document updated with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Failed to update document:", e);
+  }
+};

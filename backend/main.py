@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from embeddings_senti import table
 from infer_emotion import process_and_search, key_extraction, transcribe_audio
 from streaming import get_prime_link
+from test import get_api_recommendations
 
 app = FastAPI()
 
@@ -137,6 +138,30 @@ async def get_recommendations(ratings_input: RatingsInput = Body(...)):
                           for i in range(len(formatted_results["results"]))]
 
     return {"message": "Recommendations generated", "results": recommended_movies}
+
+
+@app.post("/api/playlist")
+async def get_recommendations(ratings_input: RatingsInput = Body(...)):
+    if not ratings_input.ratings:
+        raise HTTPException(status_code=400, detail="No ratings provided")
+
+    ratings_dict = {item.title: item.rating for item in ratings_input.ratings}
+
+    print("Received ratings for:", ratings_dict)
+
+    payload = {
+        "watchlist": ratings_dict,
+        "num_recommendations": 20
+    }
+
+    result = get_api_recommendations(payload)
+
+    if not result:
+        raise HTTPException(status_code=404, detail="No recommendations found.")
+
+    print(result)
+
+    return {"message": "Recommendations generated", "results": result}
 
 
 class TitleRequest(BaseModel):

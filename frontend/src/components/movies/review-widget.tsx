@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./review-widget.css";
-import { type MovieType, rateMovie } from "@/lib/movies";
+import { type MovieType } from "@/lib/movies";
+import { rateMovie } from "@/lib/actions";
 
 const RatingWidget = ({ movie }: { movie: MovieType }) => {
   const [rating, setRating] = useState(0);
