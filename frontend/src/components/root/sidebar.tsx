@@ -18,7 +18,6 @@ import {
 import SignInButton from "@/components/auth/signin-button";
 import SearchWidget from "@/components/root/search-widget";
 import Link from "next/link";
-// import SignInButton from "@/components/auth/signin-button";
 
 const SidebarLink = ({
   icon,

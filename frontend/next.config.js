@@ -7,7 +7,10 @@ import "./src/env.js";
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
-    remotePatterns: [new URL("https://lh3.googleusercontent.com/**")],
+    remotePatterns: [
+      new URL("https://lh3.googleusercontent.com/**"),
+      new URL("https://image.tmdb.org/**"),
+    ],
   },
 };
 

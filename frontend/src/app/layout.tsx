@@ -6,6 +6,7 @@ import localFont from "next/font/local";
 import ReactLenis from "lenis/react";
 import { AuthProvider } from "@/context/auth";
 import Sidebar from "@/components/root/sidebar";
+import { RecommendationsProvider } from "@/context/recommendations";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -33,10 +34,12 @@ export default function RootLayout({
     >
       <ReactLenis root>
         <AuthProvider>
-          <body>
-            <Sidebar />
-            {children}
-          </body>
+          <RecommendationsProvider>
+            <body>
+              <Sidebar />
+              {children}
+            </body>
+          </RecommendationsProvider>
         </AuthProvider>
       </ReactLenis>
     </html>

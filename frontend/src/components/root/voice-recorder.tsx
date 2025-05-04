@@ -48,7 +48,7 @@ export default function VoiceRecorder({
   return (
     <div
       onClick={isRecording ? stopRecording : startRecording}
-      className="h-full rounded-xl bg-gradient-to-bl from-rose-700 to-sky-600 px-5 py-2.5 text-base font-semibold text-zinc-100 uppercase"
+      className="h-full cursor-pointer rounded-xl bg-gradient-to-bl from-rose-700 to-sky-600 px-5 py-2.5 text-base font-semibold text-zinc-100 uppercase"
     >
       {isRecording ? <MicOff /> : <Mic />}
     </div>
