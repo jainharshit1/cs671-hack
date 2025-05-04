@@ -125,6 +125,43 @@ async def create_recommendations(request: WatchlistRequest): # Uses the updated 
          traceback.print_exc()
          raise HTTPException(status_code=500, detail="An internal server error occurred.")
 
+def agent_filter(titles):
+    
+def infer_emotion(user_input: str) -> str:
+    """
+    Uses the Gemini API to infer the primary emotion from user input.
+
+    Args:
+        user_input: The text sentence provided by the user.
+
+    Returns:
+        A single word representing the detected emotion, or an error message.
+    """
+    prompt = f"""
+You are a recommendation checker agent.
+
+Given a list of recommendations from system and set of watch history from user, check if the recommendations are correct and return the most relevant 4 recommendations. Do not add any movie/recommendations by yourself. Just filter from the ones we give you.
+
+Text: "{user_input}"
+""
+    try:
+
+        model = genai.GenerativeModel(model_name="gemini-2.0-flash")
+
+        response = model.generate_content(contents=prompt)
+
+        if response.parts:
+            return response.text.strip()
+        else:
+            if response.prompt_feedback:
+                 return f"Error: Blocked - {response.prompt_feedback}"
+            return "Error: No content generated"
+
+    except Exception as e:
+        print(f"An error occurred during API call: {e}")
+        return "Error: API request failed"
+
+
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the Movie Recommender API. POST to /recommendations with {'watchlist': {'title': rating, ...}, 'num_recommendations': N}"}
