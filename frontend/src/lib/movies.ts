@@ -7,6 +7,8 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import toast from "react-hot-toast";
+import { redirect } from "next/navigation";
 
 export type MovieType = {
   adult: boolean;
@@ -103,8 +105,8 @@ export const rateMovie = async ({
 }) => {
   const user = await getCurrentUser();
   if (!user) {
-    console.error("No user is signed in.");
-    return;
+    toast.error("No user is signed in.");
+    redirect("/login");
   }
 
   const q = query(collection(db, "accounts"), where("user_id", "==", user.uid));

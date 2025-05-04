@@ -6,6 +6,7 @@ import type { MovieData } from "@/app/recommendations/page";
 import { getMovieByImdbId } from "@/lib/movies";
 import Image from "next/image";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 const MovieCard = ({ movie }: { movie: MovieData }) => {
   return (
@@ -74,7 +75,8 @@ const FilmSection = () => {
 
         setIds(results);
       } catch (error) {
-        console.error("Error fetching history:", error);
+        toast.error("Error fetching history. Check console");
+        console.log(error);
         setIds([]); // Set to empty array instead of null on error
       }
     };
@@ -110,7 +112,8 @@ const FilmSection = () => {
           .filter((item): item is MovieData => item !== undefined);
         setMovies(filteredMovieData);
       } catch (error) {
-        console.error("Error fetching movies:", error);
+        toast.error("Error fetching movies. Check console");
+        console.log(error);
         setMovies([]);
       } finally {
         setLoading(false);
@@ -127,8 +130,7 @@ const FilmSection = () => {
           You might like this
         </div>
         <div className="font-hk text-base text-zinc-100/70">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus
-          dignissimos dolorem.
+          Recommendations based on your preferences and watch history.
         </div>
       </div>
       <div className="relative z-0 flex h-full w-full flex-row items-center justify-start gap-5 overflow-x-scroll py-5">

@@ -93,9 +93,7 @@ const Sidebar = () => {
             <div className="mt-2.5 space-y-2.5">
               <SignInButton />
               <div className="font-satoshi max-w-[500px] text-sm leading-normal font-medium text-zinc-100/70">
-                jello hello hello Lorem ipsum dolor sit amet, consectetur
-                adipisicing elit. Delectus distinctio dolor, ducimus eligendi
-                error exercitationem illo molestias numquam optio.
+                Create an account to save your preferences.
               </div>
             </div>
             <div className="flex flex-col gap-5">
@@ -126,8 +124,10 @@ const Sidebar = () => {
             </div>
           </div>
           <div className="font-satoshi max-w-[400px] text-sm leading-normal font-medium text-zinc-100/50">
-            jello hello hello Lorem ipsum dolor sit amet, consectetur
-            adipisicing elit. Delectus distinctio dolor.
+            MoodFlixx is a smart movie recommendation engine that requires
+            minimal input from the user&apos;s side, using a combination of user
+            ratings and a single text prompt to generate the perfect movie night
+            for you.
           </div>
         </div>
       </motion.div>

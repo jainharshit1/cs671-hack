@@ -52,12 +52,9 @@ const HistorySection = () => {
   return (
     <div className="relative z-0 flex w-full flex-row items-stretch gap-5 pb-24 pl-24">
       <div className="flex w-[300px] shrink-0 flex-col gap-2.5">
-        <div className="font-satoshi text-2xl font-semibold">
-          You might like this
-        </div>
+        <div className="font-satoshi text-2xl font-semibold">Watch again</div>
         <div className="font-hk text-base text-zinc-100/70">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus
-          dignissimos dolorem.
+          Continue where you left off
         </div>
       </div>
       <div className="relative z-0 flex h-full w-full flex-row items-center justify-start gap-5 overflow-x-scroll py-5">

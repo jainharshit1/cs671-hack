@@ -9,6 +9,8 @@ import {
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import type { MovieType } from "@/lib/movies";
+import toast from "react-hot-toast";
+import { redirect } from "next/navigation";
 
 export function getCurrentUser(): Promise<User | null> {
   return new Promise((resolve) => {
@@ -23,8 +25,8 @@ export async function getPreferences() {
   const user = await getCurrentUser();
 
   if (!user) {
-    console.error("No user is signed in.");
-    return;
+    toast.error("No user is signed in.");
+    redirect("/login");
   }
   console.log("User ID: ", user.uid);
 
@@ -52,8 +54,8 @@ export async function addAccount({
   const user = await getCurrentUser();
 
   if (!user) {
-    console.error("No user is signed in.");
-    return;
+    toast.error("No user is signed in.");
+    redirect("/login");
   }
 
   const updatedData = {
@@ -74,7 +76,8 @@ export async function addAccount({
       const docRef = await addDoc(collection(db, "accounts"), updatedData);
       console.log("Document written with ID: ", docRef.id);
     } catch (e) {
-      console.error("Error adding document: ", e);
+      toast.error("Error adding document. Check console");
+      console.log(e);
     }
     return;
   }
@@ -95,8 +98,8 @@ export async function getHistory() {
   const user = await getCurrentUser();
 
   if (!user) {
-    console.error("No user is signed in.");
-    return;
+    toast.error("No user is signed in.");
+    redirect("/login");
   }
 
   const q = query(collection(db, "accounts"), where("user_id", "==", user.uid));
@@ -123,8 +126,8 @@ export async function getPlaylistRecommendations() {
   const user = await getCurrentUser();
 
   if (!user) {
-    console.error("No user is signed in.");
-    return;
+    toast.error("No user is signed in.");
+    redirect("/login");
   }
 
   const q = query(collection(db, "accounts"), where("user_id", "==", user.uid));
@@ -177,7 +180,8 @@ export async function getPlaylistRecommendations() {
 
     return data.results;
   } catch (error) {
-    console.error("Error fetching movie recommendations:", error);
+    toast.error("Error fetching movie recommendations. Check console");
+    console.log(error);
     throw error;
   }
 }

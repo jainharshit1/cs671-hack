@@ -7,6 +7,7 @@ import ReactLenis from "lenis/react";
 import { AuthProvider } from "@/context/auth";
 import Sidebar from "@/components/root/sidebar";
 import { RecommendationsProvider } from "@/context/recommendations";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -38,6 +39,7 @@ export default function RootLayout({
             <body>
               <Sidebar />
               {children}
+              <Toaster />
             </body>
           </RecommendationsProvider>
         </AuthProvider>

@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { chunkArray, getPopularMovies, type MovieType } from "@/lib/movies";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 const MovieCard = ({
   movie,
@@ -92,7 +93,8 @@ const ChooseMovies = ({
         const rows = chunkArray(data, 4);
         setMovies(rows);
       } catch (error) {
-        console.error("Error fetching movies:", error);
+        toast.error("Error fetching movies. Check console");
+        console.log(error);
       }
       setLoading(false);
     };

@@ -4,9 +4,12 @@ import { type MovieType, rateMovie } from "@/lib/movies";
 
 const RatingWidget = ({ movie }: { movie: MovieType }) => {
   const [rating, setRating] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
+    setLoading(true);
     await rateMovie({ movie, rating });
+    setLoading(false);
   };
 
   return (
@@ -337,10 +340,10 @@ const RatingWidget = ({ movie }: { movie: MovieType }) => {
         </div>
       </div>
       <div
-        className="font-hk mt-5 cursor-pointer bg-green-700 px-5 py-2.5 text-base font-semibold"
+        className="font-hk mt-5 cursor-pointer bg-green-700 px-5 py-2.5 text-base font-semibold uppercase"
         onClick={handleSubmit}
       >
-        Submit
+        {loading ? "submitting..." : "submit"}
       </div>
     </div>
   );

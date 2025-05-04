@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from embeddings_senti import table
 from infer_emotion import process_and_search, key_extraction, transcribe_audio
+from streaming import get_prime_link
 
 app = FastAPI()
 
@@ -124,6 +125,8 @@ async def get_recommendations(ratings_input: RatingsInput = Body(...)):
     # You could also use the ratings as weights in your recommendation algorithm
     weights = {item.title: item.rating for item in ratings_input.ratings}
 
+    titles_reviews = [[i, j] for i, j in zip(keys, weights.values())]
+
     print("Received ratings for:", keys)
 
     # Use your existing recommendation function
@@ -134,3 +137,58 @@ async def get_recommendations(ratings_input: RatingsInput = Body(...)):
                           for i in range(len(formatted_results["results"]))]
 
     return {"message": "Recommendations generated", "results": recommended_movies}
+
+
+class TitleRequest(BaseModel):
+    id: str
+
+
+@app.post("/api/stream")
+async def get_streaming_links(request: TitleRequest):
+    """
+    Fetch streaming links for a given movie title via POST.
+    """
+    print(request.id)
+    streaming_links = get_prime_link(request.id)
+    print(streaming_links)
+
+    if not streaming_links:
+        raise HTTPException(status_code=404, detail="Streaming link not found.")
+
+    return {"url": streaming_links}
+
+# @app.post("/api/recommendations")
+# async def get_recommendations(ratings_input: RatingsInput = Body(...)):
+#     """
+#     Takes an array of user ratings and returns movie recommendations.
+#
+#     Example input:
+#     {
+#         "ratings": [
+#             {"title": "The Shawshank Redemption", "rating": 5},
+#             {"title": "Inception", "rating": 4}
+#         ]
+#     }
+#     """
+#     if not ratings_input.ratings:
+#         raise HTTPException(status_code=400, detail="No ratings provided")
+#
+#     # Extract titles as keys from the ratings
+#     keys = [item.title for item in ratings_input.ratings]
+#
+#     # You could also use the ratings as weights in your recommendation algorithm
+#     weights = {item.title: item.rating for item in ratings_input.ratings}
+#
+#     titles_reviews = [[i, j] for i, j in zip(keys, weights.values())]
+#     titles_reccs = get_output(get_movie_reccs(titles_reviews))
+#     print(titles_reccs)
+#     print("Received ratings for:", keys)
+#
+#     # Use your existing recommendation function
+#     results_df, formatted_results = process_and_search(table, keys, limit=10)
+#
+#     # Get the recommended movie titles
+#     recommended_movies = [formatted_results["results"][i]["movie_id"]
+#                           for i in range(len(formatted_results["results"]))]
+#
+#     return {"message": "Recommendations generated", "results": recommended_movies}

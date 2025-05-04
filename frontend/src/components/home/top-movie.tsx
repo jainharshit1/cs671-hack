@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getMovieByImdbId, type MovieType } from "@/lib/movies";
 import ImgBig from "public/pic-big.jpg";
+import toast from "react-hot-toast";
 
 const TopMovie = () => {
   const [movie, setMovie] = useState<MovieType>();
@@ -15,7 +16,8 @@ const TopMovie = () => {
         const movieData = data.movie_results[0];
         setMovie(movieData);
       } catch (error) {
-        console.error("Error fetching movie:", error);
+        toast.error("Error fetching movie. Check console");
+        console.log(error);
       }
     };
 

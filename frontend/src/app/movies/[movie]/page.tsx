@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import { getMovieByImdbId, type MovieType } from "@/lib/movies";
 import Image from "next/image";
 import ReviewWidget from "@/components/movies/review-widget";
+import WatchNow from "@/components/movies/watch-now";
+import toast from "react-hot-toast";
 
 const MoviePage = () => {
   const movieId = useParams().movie;
@@ -22,7 +24,8 @@ const MoviePage = () => {
 
         setMovie(movieData);
       } catch (error) {
-        console.error("Error fetching movie:", error);
+        toast.error("Error fetching movie. Check console");
+        console.log(error);
       }
     };
 
@@ -52,17 +55,8 @@ const MoviePage = () => {
           <div className="font-hk mb-12 max-w-[700px] text-base font-medium text-zinc-100/70">
             {movie.overview}
           </div>
-          <div className="font-satoshi mb-12 w-fit rounded-md border border-zinc-100/[0.1] bg-blue-900 px-5 py-2 text-lg font-semibold">
-            Watch now
-          </div>
+          <WatchNow id={movieId as string} />
         </div>
-        <Image
-          src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-          width={400}
-          height={600}
-          alt={movie.title}
-          className="max-w-[400px] rounded-xl border border-zinc-100/10 object-cover object-center"
-        />
       </div>
       <div className="flex w-full flex-col items-center justify-center gap-2.5 pb-24">
         <div className="font-satoshi text-4xl font-bold text-zinc-100">

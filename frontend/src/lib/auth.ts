@@ -1,6 +1,7 @@
 import { signInWithPopup } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db, googleAuthProvider } from "./firebase";
+import toast from "react-hot-toast";
 
 export async function signInWithGoogle() {
   try {
@@ -24,7 +25,7 @@ export async function signInWithGoogle() {
       }
     }
   } catch (err) {
-    console.error("Google Sign-In Error:", err);
-    throw err;
+    toast.error("Google Sign-In Error");
+    console.log(err);
   }
 }
