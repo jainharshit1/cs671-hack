@@ -21,28 +21,40 @@ genai.configure(api_key=API_KEY)
 
 def infer_emotion(user_input: str) -> str:
     """
-    Uses the Gemini API to infer the primary emotion from user input.
+    Uses the Gemini API to infer the primary emotion from user input with improved diversity.
 
     Args:
         user_input: The text sentence provided by the user.
 
     Returns:
-        A single word representing the detected emotion, or an error message.
+        A string representing the detected emotions, or an error message.
     """
     prompt = f"""
-You are an emotion detection agent.
+You are an emotion detection specialist for a movie recommendation system.
 
-Given a short sentence from a user, identify the primary emotion they are expressing.
-Respond with top three emotions only. Possible labels include: happy, sad, angry, tired, anxious,romantic, excited, relaxed, frustrated, lonely, depressed, etc.
+Given a user's input: "{user_input}"
 
-Text: "{user_input}"
+Your task is to:
+1. First, determine if the user is explicitly stating how they want to feel (e.g., "I want to feel happy").
+2. If not, identify the primary emotion they are expressing (e.g., "I'm feeling sad today").
+3. If no emotion is detected, respond with "none".
 
-Emotion:
+RULES FOR DETERMINING COMPLEMENTARY EMOTIONS:
+- For negative emotions (sad, angry, depressed, anxious, etc.): Provide the primary negative emotion first, then TWO DIFFERENT positive emotions that would complement this negative state. These should be UNIQUE to this specific negative emotion - avoid generic responses like "happy" for every negative emotion.
+- For positive emotions (happy, excited, etc.): Provide the detected positive emotion first, then TWO DIFFERENT complementary positive emotions that are distinct from one another.
+- For explicit desires: Provide the desired emotion first, then TWO other complementary emotions.
+
+IMPORTANT:
+- Each negative emotion should trigger a UNIQUE set of complementary emotions
+- Do not use the same complementary emotions for different primary emotions
+- Choose nuanced, specific emotions rather than generic ones
+- Consider psychological principles of emotional complementarity
+- DO NOT use a fixed mapping system - analyze each input contextually
+
+Format your response EXACTLY as: "emotion1, emotion2, emotion3" (no other text).
 """
     try:
-
         model = genai.GenerativeModel(model_name="gemini-2.0-flash")
-
         response = model.generate_content(contents=prompt)
 
         if response.parts:
@@ -323,15 +335,7 @@ import re
 
 def process_and_search(table, keys, return_formatted=True, limit=10):
     """
-    Process extracted keys and perform advanced movie search
-    
-    Args:
-        table: LanceDB table
-        keys: Dictionary of keys from key_extraction function
-        limit: Maximum number of search results to return
-        
-    Returns:
-        DataFrame of search results
+    Process extracted keys and perform advanced movie search with split emotion handling
     """
     # Initialize parameters for search
     metadata_filters = {}
@@ -396,37 +400,100 @@ def process_and_search(table, keys, return_formatted=True, limit=10):
 
         except Exception as e:
             print(f"Error processing preferences JSON: {e}")
+    # Process emotions with the split approach
+    results = pd.DataFrame()
 
-    # Process emotions if available
     if 'emotions' in keys and keys['emotions']:
         try:
-            # Extract top emotions using regex
-            emotion_matches = re.findall(r'\d\.\s+(\w+)', keys['emotions'])
-            if emotion_matches:
-                # Use the top emotions as mood
-                mood = ", ".join(emotion_matches[:3])  # Take up to 3 emotions
-                print(f"Extracted mood from emotions: {mood}")
+            # Split the comma-separated emotions
+            emotions = [e.strip() for e in keys['emotions'].split(',')]
+
+            if emotions and len(emotions) > 0:
+                # Get the first emotion (primary emotion)
+                primary_emotion = emotions[0]
+
+                # Check if primary emotion is negative
+                negative_emotions = ['sad', 'angry', 'depressed', 'anxious', 'frustrated',
+                                     'lonely', 'tired', 'bored', 'disappointed', 'stressed']
+
+                is_negative = any(neg in primary_emotion.lower() for neg in negative_emotions)
+
+                if is_negative and len(emotions) > 1:
+                    # For negative emotions, do two separate searches
+                    print(f"Performing split search for negative emotion: {primary_emotion}")
+
+                    # 1. Search with just the primary negative emotion (30% of results)
+                    neg_limit = max(int(limit * 0.3), 1)  # At least 1 result
+                    print(f"Searching for {neg_limit} movies matching negative emotion: {primary_emotion}")
+
+                    neg_results = advanced_semantic_search(
+                        table=table,
+                        query=query,
+                        genre=genre,
+                        mood=primary_emotion,  # Use primary negative emotion
+                        plot_elements=plot_elements,
+                        metadata_filters=metadata_filters,
+                        limit=neg_limit
+                    )
+
+                    # 2. Search with complementary positive emotions (70% of results)
+                    pos_limit = limit - len(neg_results)
+                    complementary = emotions[1:]
+                    complementary_mood = ", ".join(complementary)
+                    print(f"Searching for {pos_limit} movies matching complementary emotions: {complementary_mood}")
+
+                    pos_results = advanced_semantic_search(
+                        table=table,
+                        query=query,
+                        genre=genre,
+                        mood=complementary_mood,  # Use complementary emotions
+                        plot_elements=plot_elements,
+                        metadata_filters=metadata_filters,
+                        limit=pos_limit
+                    )
+
+                    # Combine the results
+                    results = pd.concat([neg_results, pos_results], ignore_index=True)
+                    print(
+                        f"Combined {len(neg_results)} negative emotion movies with {len(pos_results)} positive emotion movies")
+
+                else:
+                    # For positive emotions or when no complementary emotions available
+                    mood = ", ".join(emotions)
+                    print(f"Searching with all emotions: {mood}")
+
+                    results = advanced_semantic_search(
+                        table=table,
+                        query=query,
+                        genre=genre,
+                        mood=mood,
+                        plot_elements=plot_elements,
+                        metadata_filters=metadata_filters,
+                        limit=limit
+                    )
+
         except Exception as e:
             print(f"Error processing emotions: {e}")
 
-    # Perform search with extracted parameters
-    print("\nPerforming advanced semantic search with extracted parameters...")
-    print(f"Genre: {genre or 'Not specified'}")
-    print(f"Mood: {mood or 'Not specified'}")
-    print(f"Plot elements: {plot_elements or 'Not specified'}")
-    print(f"Metadata filters: {metadata_filters or 'None'}")
+    # If no emotions were processed or there was an error, do a generic search
+    if len(results) == 0:
+        print("\nPerforming advanced semantic search with extracted parameters...")
+        print(f"Genre: {genre or 'Not specified'}")
+        print(f"Mood: {mood or 'Not specified'}")
+        print(f"Plot elements: {plot_elements or 'Not specified'}")
+        print(f"Metadata filters: {metadata_filters or 'None'}")
 
-    # Call the advanced semantic search function
-    results = advanced_semantic_search(
-        table=table,
-        query=query,
-        genre=genre,
-        mood=mood,
-        plot_elements=plot_elements,
-        metadata_filters=metadata_filters,
-        limit=limit
-    )
+        results = advanced_semantic_search(
+            table=table,
+            query=query,
+            genre=genre,
+            mood=mood,
+            plot_elements=plot_elements,
+            metadata_filters=metadata_filters,
+            limit=limit
+        )
 
+    # Format results (existing code)
     if return_formatted:
         formatted_results = {
             "search_parameters": {
@@ -446,7 +513,6 @@ def process_and_search(table, keys, return_formatted=True, limit=10):
                     "title": row['movie_name'],
                     "similarity_score": float(row['_distance'])
                 }
-
                 if 'movie_id' in row:
                     movie_result["imdb_id"] = row['movie_id']
 
