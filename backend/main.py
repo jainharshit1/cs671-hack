@@ -1,8 +1,9 @@
-from typing import Optional
+from typing import Optional, List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from fastapi import File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from embeddings_senti import table
 from infer_emotion import process_and_search, key_extraction, transcribe_audio
@@ -11,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Your Next.js frontend URL
+    allow_origins=["http://localhost:3000"],  # or ["*"] for all origins (not recommended for production)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -77,6 +78,7 @@ async def upload_file_or_text(
 
     return {"message": "Text received", "text": text_chatbot, "results": titles}
 
+
 #
 # recommendations_df= get_movie_reccs(title_reviews)
 #
@@ -90,3 +92,45 @@ async def upload_file_or_text(
 # output_hist = get_output(recommendations_df)
 # final_output_hist = get_imdbid(output_hist)
 #
+
+class RatingItem(BaseModel):
+    title: str
+    rating: int
+
+
+class RatingsInput(BaseModel):
+    ratings: List[RatingItem]
+
+
+@app.post("/api/recommendations")
+async def get_recommendations(ratings_input: RatingsInput = Body(...)):
+    """
+    Takes an array of user ratings and returns movie recommendations.
+
+    Example input:
+    {
+        "ratings": [
+            {"title": "The Shawshank Redemption", "rating": 5},
+            {"title": "Inception", "rating": 4}
+        ]
+    }
+    """
+    if not ratings_input.ratings:
+        raise HTTPException(status_code=400, detail="No ratings provided")
+
+    # Extract titles as keys from the ratings
+    keys = [item.title for item in ratings_input.ratings]
+
+    # You could also use the ratings as weights in your recommendation algorithm
+    weights = {item.title: item.rating for item in ratings_input.ratings}
+
+    print("Received ratings for:", keys)
+
+    # Use your existing recommendation function
+    results_df, formatted_results = process_and_search(table, keys, limit=10)
+
+    # Get the recommended movie titles
+    recommended_movies = [formatted_results["results"][i]["movie_id"]
+                          for i in range(len(formatted_results["results"]))]
+
+    return {"message": "Recommendations generated", "results": recommended_movies}

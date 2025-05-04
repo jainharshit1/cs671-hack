@@ -73,9 +73,14 @@ const MovieRow = ({
   );
 };
 
-const ChooseMovies = () => {
+const ChooseMovies = ({
+  chosen,
+  setChosen,
+}: {
+  chosen: MovieType[];
+  setChosen: Dispatch<SetStateAction<MovieType[]>>;
+}) => {
   const [movies, setMovies] = useState<MovieType[][]>();
-  const [chosen, setChosen] = useState<MovieType[]>([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
 

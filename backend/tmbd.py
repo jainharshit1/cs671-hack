@@ -4,6 +4,8 @@ from collections import defaultdict, Counter
 
 import requests
 
+from imdb_methods import get_imdb_ids_from_titles
+
 # Configure logging
 # Keep logging for warnings/errors from API calls, but remove INFO level logging for process steps
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -269,40 +271,40 @@ def generate_movie_playlist_from_dict(initial_movies_dict):
     # Create the final list containing only movie titles
     final_playlist_titles_only = [movie.get('title') for movie in top_rated_candidates if movie.get('title')]
 
-    return final_playlist_titles_only
+    return get_imdb_ids_from_titles(final_playlist_titles_only)
 
 
 # --- Example Usage (for demonstration) ---
 if __name__ == "__main__":
     # Define the input in the requested dictionary format
     initial_movies_input = {
-        "The Shawshank Redemption": 5,
-        "The Dark Knight": 4,
-        "Pulp Fiction": 5,
-        "Fight Club": 4,
-        "Forrest Gump": 5,
-        "Inception": 4,
-        "The Matrix": 5,
-        "Goodfellas": 4,
-        "Interstellar": 5,
-        "Parasite": 5,
-        "Avengers: Endgame": 3,
-        "La La Land": 4,
-        "Spirited Away": 5,
-        "The Godfather": 5,
-        "The Lord of the Rings: The Fellowship of the Ring": 4,
-        "Titanic": 3,
-        "Eternal Sunshine of the Spotless Mind": 5,
-        "The Silence of the Lambs": 4,
-        ("Invalid Key Tuple", 5): 4,  # Example of non-string key (will be skipped)
-        "Saving Private Ryan": 4,
-        "The Green Mile": 5,
+        # "The Shawshank Redemption": 5,
+        # "The Dark Knight": 4,
+        # "Pulp Fiction": 5,
+        # "Fight Club": 4,
+        # "Forrest Gump": 5,
+        # "Inception": 4,
+        # "The Matrix": 5,
+        # "Goodfellas": 4,
+        # "Interstellar": 5,
+        # "Parasite": 5,
+        # "Avengers: Endgame": 3,
+        # "La La Land": 4,
+        # "Spirited Away": 5,
+        # "The Godfather": 5,
+        # "The Lord of the Rings: The Fellowship of the Ring": 4,
+        "Titanic": 1,
+        # "Eternal Sunshine of the Spotless Mind": 5,
+        # "The Silence of the Lambs": 4,
+        # ("Invalid Key Tuple", 5): 4,  # Example of non-string key (will be skipped)
+        # "Saving Private Ryan": 4,
+        # "The Green Mile": 5,
         "Step Brothers": 2,
         "The Room": 1,
-        "Avatar": 3,
-        "Dune": 4,
-        "The Grand Budapest Hotel": 5,
-        "Mad Max: Fury Road": 4
+        # "Avatar": 3,
+        # "Dune": 4,
+        # "The Grand Budapest Hotel": 5,
+        # "Mad Max: Fury Road": 4
     }
 
     print("Generating playlist with dictionary input...")

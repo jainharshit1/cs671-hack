@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getMovieByImdbId, type MovieType } from "@/lib/movies";
 import ImgBig from "public/pic-big.jpg";
-import RatingTrigger from "@/components/movies/rating-trigger";
 
 const TopMovie = () => {
   const [movie, setMovie] = useState<MovieType>();
@@ -55,7 +54,9 @@ const TopMovie = () => {
             {movie?.overview ??
               "Hang tight while we fetch out latest recommendations for you."}
           </div>
-          <RatingTrigger id={"tt3566834"} />
+          <div className="font-satoshi relative z-20 w-fit cursor-pointer rounded-md border border-zinc-100/[0.1] bg-blue-900 px-5 py-2 text-lg font-semibold">
+            Start now
+          </div>
         </div>
       </div>
     </div>

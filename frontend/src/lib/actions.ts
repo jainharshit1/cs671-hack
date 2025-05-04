@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, type User } from "firebase/auth";
+import type { MovieType } from "@/lib/movies";
 
 export function getCurrentUser(): Promise<User | null> {
   return new Promise((resolve) => {
@@ -39,7 +40,15 @@ export async function getPreferences() {
   return accDoc?.data();
 }
 
-export async function addAccount({ loc, lang }: { loc: string; lang: string }) {
+export async function addAccount({
+  loc,
+  lang,
+  currHistory,
+}: {
+  loc: string;
+  lang: string;
+  currHistory: MovieType[];
+}) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -51,7 +60,7 @@ export async function addAccount({ loc, lang }: { loc: string; lang: string }) {
     user_id: user.uid,
     language: lang,
     location: loc,
-    history: [],
+    history: currHistory,
     genre: [],
     cast: [],
     mood: [],
@@ -80,4 +89,95 @@ export async function addAccount({ loc, lang }: { loc: string; lang: string }) {
   await updateDoc(docRef, updatedData);
 
   console.log("Document updated with ID: ", docRef.id);
+}
+
+export async function getHistory() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    console.error("No user is signed in.");
+    return;
+  }
+
+  const q = query(collection(db, "accounts"), where("user_id", "==", user.uid));
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
+    console.log("No matching documents.");
+    return;
+  }
+
+  const accDoc = querySnapshot.docs[0];
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const history: MovieType[] = accDoc?.data().history;
+
+  if (!history) {
+    console.log("No history found.");
+    return;
+  }
+
+  return history;
+}
+
+export async function getPlaylistRecommendations() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    console.error("No user is signed in.");
+    return;
+  }
+
+  const q = query(collection(db, "accounts"), where("user_id", "==", user.uid));
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
+    console.log("No matching documents.");
+    return;
+  }
+
+  const accDoc = querySnapshot.docs[0];
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const history = accDoc?.data().history;
+
+  if (!history) {
+    console.log("No history found.");
+    return;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+  const playlist = history.map((el: { title: string }) => ({
+    title: el.title,
+    rating: 5,
+  }));
+
+  console.log(playlist);
+
+  try {
+    console.log("Sending data:", JSON.stringify(playlist));
+
+    const response = await fetch("http://localhost:8000/api/recommendations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ ratings: playlist }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Server response:", response.status, errorText);
+      throw new Error(
+        `HTTP error! Status: ${response.status}. Details: ${errorText}`,
+      );
+    }
+
+    const data = await response.json();
+
+    return data.results;
+  } catch (error) {
+    console.error("Error fetching movie recommendations:", error);
+    throw error;
+  }
 }

@@ -5,17 +5,20 @@ import { addAccount } from "@/lib/actions";
 import OnboardingHeader from "@/components/auth/onboarding-header";
 import { useRouter } from "next/navigation";
 import ChooseMovies from "@/components/onboarding/choose-movies";
+import type { MovieType } from "@/lib/movies";
 
 const OnboardingPage = () => {
   const [loc, setLoc] = useState("");
   const [lang, setLang] = useState("");
 
+  const [chosen, setChosen] = useState<MovieType[]>([]);
+
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ loc, lang });
-    void addAccount({ loc, lang });
+    const history = chosen.map((movie) => ({ ...movie, rating: 5 }));
+    void addAccount({ loc, lang, currHistory: history });
     router.push("/");
   };
 
@@ -58,7 +61,7 @@ const OnboardingPage = () => {
               onChange={(e) => setLang(e.target.value)}
             />
           </div>
-          <ChooseMovies />
+          <ChooseMovies chosen={chosen} setChosen={setChosen} />
           <div className="col-span-2 mt-5 flex justify-center">
             <input
               type="submit"
