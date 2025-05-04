@@ -36,18 +36,20 @@
 ---
 
 
-## 🧠 How Our Model WORKS
+## 🧠 Our TWO Models
 
-Our recommendation system leverages a multi-agent AI architecture powered by Gemini 2.0 Flash. When a user inputs their mood or preference, our primary agent analyzes the text to extract emotional context and intent. This emotional fingerprint is then vectorized and matched against our movie database in LanceDB, where each film has been pre-encoded with emotional and thematic embeddings. A secondary agent evaluates metadata factors like genre, actors, and historical user preferences to refine these matches. For complex queries (like "action movies that won't make me more anxious"), our system employs a reasoning layer that balances multiple emotional dimensions. The final recommendations are ranked using a composite scoring algorithm that prioritizes mood-content alignment while maintaining diversity in suggestions. Each interaction improves our model through feedback loops that fine-tune the emotional mapping between user states and content characteristics.
+We use a unique two-model recommendation system, one for short-term mood based recommendations, and the second system for watch history inspired recommendations.
+
+Our first recommendation system leverages a multi-agent AI architecture powered by Gemini 2.0 Flash. When a user inputs their mood or preference, our primary agent analyzes the text to extract emotional context and intent. This emotional fingerprint is then vectorized and matched against our movie database in LanceDB, where each film has been pre-encoded with emotional and thematic embeddings. A secondary agent evaluates metadata factors like genre, actors, and historical user preferences to refine these matches. For complex queries (like "action movies that won't make me more anxious"), our system employs a reasoning layer that balances multiple emotional dimensions. The final recommendations are ranked using a composite scoring algorithm that prioritizes mood-content alignment while maintaining diversity in suggestions. Each interaction improves our model through feedback loops that fine-tune the emotional mapping between user states and content characteristics.
 
 ---
 
 ## 📽️ Watch History-Based Recommendation
 
-We use Cornac's **BiVAE** model for the collaborative filtering task in content recommendation.  
-The BiVAE model is trained on the **MovieLens 32M** dataset, which includes the latest movies up to 2024.
-
-To recommend content for a new user, we perform **similarity search** to find the most similar existing user in the MovieLens dataset.  
+We use Cornac's **BiVAE** model for watch-history based recommendations. BiVAEs are specialisation of the Variational Auto Encoder meant to deal with dyadic data- for example, users and their ratings of movies.
+When a user presents their watch history, the model maps it to the latent space and finds the closest related known user. Recommendations are then generated for this known user based on their ratings. (Collaborative Filtering).
+The BiVAE model is trained on the **MovieLens 32M** dataset, which includes data of over 750,000 movies and 8 million ratings up to 2023.
+The recommendations generated are then filtered through gemini along with information about the user's current mood, hence giving highly relevant recommendations based not only on watch history but also mood.
 The recommendations (predicted ratings) for this similar user are then used as recommendations for the new user.
 
 ---
@@ -70,6 +72,7 @@ This ensures a deeply personalized and context-aware viewing experience.
 | **Database**  | Firebase                  |
 | **Vector DB** | LanceDB                   |
 | **AI Agents** | Gemini (gemini-2.0-flash) |
+| **Bi VAE**    | Cornacs                   |
 
 ---
 
@@ -94,7 +97,7 @@ This ensures a deeply personalized and context-aware viewing experience.
     cp .env.example .env
 ```
 
-- BiVAE QuickStart:
+- BiVAE QuickStart and Testing:
    - 1. Train BiVAE
    ```bash
       cd BiVAE
@@ -123,7 +126,11 @@ This ensures a deeply personalized and context-aware viewing experience.
     uvicorn main:app --reload --port 8000
 ```
 
-
+- cd into the `BiVAE` directory and start the second server:
+```bash
+   cd backend
+   uvicorn bivae_web2:app --reload --port 8001
+   ngrok http 8001
 ---
 
 
