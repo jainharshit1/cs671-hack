@@ -146,9 +146,9 @@ export async function getPlaylistRecommendations() {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-  const playlist = history.map((el: { title: string }) => ({
+  const playlist = history.map((el: { title: string; rating: number }) => ({
     title: el.title,
-    rating: 5,
+    rating: el.rating,
   }));
 
   console.log(playlist);
