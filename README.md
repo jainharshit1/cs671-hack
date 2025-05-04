@@ -131,6 +131,7 @@ This ensures a deeply personalized and context-aware viewing experience.
    cd backend
    uvicorn bivae_web2:app --reload --port 8001
    ngrok http 8001
+```
 ---
 
 
